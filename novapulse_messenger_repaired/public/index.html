@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>NovaPulse Messenger</title>
+<link rel="stylesheet" href="/public/styles.css" />
+</head>
+<body>
+  <div class="loader">
+    <div class="loader__ring"></div>
+    <div class="loader__brand">
+      <div class="loader__logo">NP</div>
+      <div>
+        <div class="loader__title">NovaPulse</div>
+        <div class="loader__subtitle">Загрузка защищённого интерфейса…</div>
+      </div>
+    </div>
+  </div>
+
+  <main class="app" id="app">
+    <section class="auth" id="authScreen">
+      <div class="auth__card glass">
+        <div class="auth__left">
+          <div class="brand-mark">NP</div>
+          <h1>NovaPulse Messenger</h1>
+          <p>Русский мессенджер с реальным обменом сообщениями между пользователями через сервер и WebSocket.</p>
+          <div class="auth__features">
+            <div>• Регистрация и вход</div>
+            <div>• Личные чаты</div>
+            <div>• Голосовые</div>
+            <div>• AI на русском</div>
+            <div>• Темы и кастомизация</div>
+          </div>
+        </div>
+
+        <div class="auth__right">
+          <div class="auth__tabs">
+            <button class="auth__tab is-active" data-auth-tab="login">Вход</button>
+            <button class="auth__tab" data-auth-tab="register">Регистрация</button>
+          </div>
+
+          <form class="auth-form is-active" id="loginForm" autocomplete="on">
+            <label>Юзернейм</label>
+            <input name="username" placeholder="например, roman" />
+            <label>Пароль</label>
+            <input name="password" type="password" placeholder="••••••••" />
+            <label class="auth__remember">
+              <input type="checkbox" name="remember" checked />
+              <span>Запомнить меня</span>
+            </label>
+            <button class="btn btn--primary" type="submit">Войти</button>
+            <button class="btn btn--ghost" id="googleBtn" type="button">Войти через Google</button>
+          </form>
+
+          <form class="auth-form" id="registerForm" autocomplete="on">
+            <label>Имя</label>
+            <input name="displayName" placeholder="Роман" />
+            <label>Юзернейм</label>
+            <input name="username" placeholder="roman" />
+            <label>Пароль</label>
+            <input name="password" type="password" placeholder="не короче 6 символов" />
+            <label>Био</label>
+            <textarea name="bio" rows="3" placeholder="Коротко о себе"></textarea>
+            <button class="btn btn--primary" type="submit">Создать аккаунт</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace hidden" id="workspace">
+      <aside class="sidebar glass">
+        <div class="sidebar__header">
+          <div class="profile-mini">
+            <img id="meAvatar" class="avatar avatar--small" alt="">
+            <div>
+              <div id="meName" class="profile-mini__name">—</div>
+              <div id="meStatus" class="profile-mini__status">офлайн</div>
+            </div>
+          </div>
+          <button class="icon-btn" id="settingsToggle" title="Настройки">⚙</button>
+        </div>
+
+        <div class="sidebar__search">
+          <input id="searchInput" placeholder="Поиск пользователей или чатов… (Ctrl+K)" />
+          <div id="searchResults" class="search-results"></div>
+        </div>
+
+        <div class="sidebar__section">
+          <div class="sidebar__section-title">
+            <span>Пользователи</span>
+            <button class="text-btn" id="refreshUsersBtn">Обновить</button>
+          </div>
+          <div id="userList" class="user-list"></div>
+        </div>
+
+        <div class="sidebar__footer">
+          <button class="btn btn--secondary" id="addUserBtn">Добавить собеседника</button>
+          <button class="btn btn--ghost" id="logoutBtn">Выйти</button>
+        </div>
+      </aside>
+
+      <section class="chat glass">
+        <header class="chat__header">
+          <div class="chat-peer">
+            <img id="peerAvatar" class="avatar" alt="">
+            <div>
+              <div id="peerName" class="chat-peer__name">Выбери собеседника</div>
+              <div id="peerMeta" class="chat-peer__meta">поиск и личные чаты</div>
+            </div>
+          </div>
+          <div class="chat__header-actions">
+            <button class="pill is-active" id="textModeBtn">Чат</button>
+            <button class="pill" id="aiModeBtn">AI</button>
+          </div>
+        </header>
+
+        <div id="messages" class="messages">
+          <div class="empty-state">
+            <div class="empty-state__icon">✦</div>
+            <h2>Выбери собеседника</h2>
+            <p>Найди пользователя в поиске или добавь его по юзернейму.</p>
+          </div>
+        </div>
+
+        <div class="typing-line" id="typingLine"></div>
+
+        <footer class="composer">
+          <button class="icon-btn" id="attachBtn" title="Вложение">＋</button>
+          <button class="icon-btn" id="voiceBtn" title="Голосовое">🎙</button>
+          <input id="messageInput" class="composer__input" placeholder="Напиши сообщение…" />
+          <button class="btn btn--primary" id="sendBtn">Отправить</button>
+        </footer>
+      </section>
+
+      <aside class="rightpanel glass">
+        <div class="rightpanel__block">
+          <h3>Профиль</h3>
+          <div class="profile-card">
+            <img id="profileAvatar" class="avatar avatar--xl" alt="">
+            <div class="profile-card__name" id="profileName">—</div>
+            <div class="profile-card__bio" id="profileBio">—</div>
+          </div>
+          <label class="file-pill">
+            Сменить аватар
+            <input id="avatarInput" type="file" accept="image/*" hidden>
+          </label>
+        </div>
+
+        <div class="rightpanel__block">
+          <h3>Настройки темы</h3>
+          <div class="theme-grid" id="themeGrid">
+            <button class="theme-chip" data-theme="dark-blue">Тёмно-синий</button>
+            <button class="theme-chip" data-theme="red-neon">Красный неон</button>
+            <button class="theme-chip" data-theme="green-matrix">Matrix</button>
+            <button class="theme-chip" data-theme="sunlight-day">Солнечный день</button>
+            <button class="theme-chip" data-theme="moon-night">Лунная ночь</button>
+          </div>
+        </div>
+
+        <div class="rightpanel__block">
+          <h3>Музыка и звук</h3>
+          <label>Громкость музыки</label>
+          <input id="musicVolume" type="range" min="0" max="0.3" step="0.01" value="0.12">
+          <label>Громкость звуков</label>
+          <input id="sfxVolume" type="range" min="0" max="0.4" step="0.01" value="0.18">
+          <label class="toggle">
+            <input type="checkbox" id="muteMusic">
+            <span>Тихий режим</span>
+          </label>
+        </div>
+
+        <div class="rightpanel__block">
+          <h3>AI инструменты</h3>
+          <button class="btn btn--secondary" id="openAiBtn">Открыть AI режим</button>
+          <button class="btn btn--ghost" id="openProfileBtn">Редактировать профиль</button>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal hidden" id="profileModal">
+    <div class="modal__card glass">
+      <h2>Профиль</h2>
+      <label>Имя</label>
+      <input id="editDisplayName" />
+      <label>Био</label>
+      <textarea id="editBio" rows="4"></textarea>
+      <label>Акцентный цвет</label>
+      <input id="accentColor" type="color" value="#7c5cff" />
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="closeProfileModal">Отмена</button>
+        <button class="btn btn--primary" id="saveProfileBtn">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="addUserModal">
+    <div class="modal__card glass">
+      <h2>Найти собеседника</h2>
+      <input id="addUserInput" placeholder="Введите юзернейм" />
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="closeAddUserModal">Отмена</button>
+        <button class="btn btn--primary" id="addUserConfirm">Найти</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="googleModal">
+    <div class="modal__card glass">
+      <h2>Google вход</h2>
+      <p>Это безопасная имитация OAuth-потока для локального приложения.</p>
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="closeGoogleModal">Отмена</button>
+        <button class="btn btn--primary" id="confirmGoogleLogin">Продолжить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/public/app.js"></script>
+</body>
+</html>
